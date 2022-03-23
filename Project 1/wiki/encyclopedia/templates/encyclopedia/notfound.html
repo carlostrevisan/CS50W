@@ -1,0 +1,11 @@
+{% extends "encyclopedia/layout.html" %} {% block body %}
+<h1>This page was not found.</h1>
+{% if entries|length == 1 %}
+<p>Found {{ entries|length }} result</p>
+<hr />
+{% elif entries|length > 1 %}
+<li>Found {{ entries|length }} results</li>
+<hr />
+{% endif %} {% for entry in entries %}
+<li><a href="/wiki/{{ entry }}">{{ entry }}</a></li>
+{% endfor %} {% endblock %}
