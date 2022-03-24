@@ -4,7 +4,7 @@
 <p>Found {{ entries|length }} result</p>
 <hr />
 {% elif entries|length > 1 %}
-<li>Found {{ entries|length }} results</li>
+<p>Found {{ entries|length }} results</p>
 <hr />
 {% endif %} {% for entry in entries %}
 <li><a href="/wiki/{{ entry }}">{{ entry }}</a></li>

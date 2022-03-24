@@ -1,3 +1,13 @@
-{% extends "encyclopedia/layout.html" %} {% block body %}
-    {{ stuff|safe }}
+{% extends "encyclopedia/layout.html" %} 
+
+{% block title %}
+    {{ title }}
 {% endblock %}
+
+{% block body %}
+    {{ stuff|safe }}
+    {% with title|add:"/edit" as urledit %}
+        <a href="{{ urledit }}">Editar</a>
+    {% endwith %}
+{% endblock %}
+
