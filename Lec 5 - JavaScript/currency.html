@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency Exchange</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').onsubmit = function () {
+                fetch('https://api.apilayer.com/exchangerates_data/latest?apikey=n8nFEXnVPWe7aIKwuhj3o7lSXEjdq4lT&base=USD').then(
+                    response => { return response.json() }
+                ).then(
+                    data => {
+                        const currency = document.querySelector('#currency').value.toUpperCase()
+                        const rate = data.rates[currency]
+                        if (rate != undefined) {
+                            document.querySelector("#result").innerHTML = `${rate.toFixed(2)} at ${data.date}`
+                        } else {
+                            document.querySelector("#result").innerHTML = 'Invalid currency.'
+                        }
+                    }
+                )
+                return false;
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <form>
+        <input id="currency" placeholder="Currency" type="text">
+        <input type="submit" value="Convert">
+    </form>
+    <div id="result">
+
+    </div>
+</body>
+
+</html>
