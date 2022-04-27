@@ -9,7 +9,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('form').onsubmit = function () {
-                fetch('https://api.apilayer.com/exchangerates_data/latest?apikey=n8nFEXnVPWe7aIKwuhj3o7lSXEjdq4lT&base=USD').then(
+                fetch('https://api.apilayer.com/exchangerates_data/latest?apikey=&base=USD').then(
                     response => { return response.json() }
                 ).then(
                     data => {
