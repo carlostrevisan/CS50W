@@ -60,7 +60,32 @@ function load_mailbox(mailbox) {
       console.log(posts)
       posts.sort(sortById)
       for (let index = 0; index < posts.length; index++) {
-        if (posts[index].recipients.includes(user)) {
+        console.log(index)
+        if (mailbox == 'inbox' && posts[index].recipients.includes(user)) {
+          const div1 = document.createElement('div')
+          div1.className = "card"
+          div1.style.marginTop = "5px"
+          if (posts[index].read)
+            div1.style.backgroundColor = "#D3D3D3"
+          document.querySelector('#emails-view').append(div1)
+          div1.addEventListener("click", () => { read_email(posts[index].id, mailbox) })
+          const div2 = document.createElement('div')
+          div2.className = "card-body"
+          div1.appendChild(div2)
+          const subject = document.createElement('h5')
+          subject.className = 'card-title'
+          subject.innerHTML = `${posts[index].subject}`
+          div2.append(subject)
+          const sender = document.createElement('h6')
+          sender.className = 'card-subtitle'
+          sender.innerHTML = `From: ${posts[index].sender}`
+          div2.append(sender)
+          const date = document.createElement('p')
+          date.innerHTML = posts[index].timestamp
+          date.style.textAlign = 'right'
+          date.style.marginBottom = "0px"
+          div2.append(date)
+        } else if (mailbox == 'sent' && posts[index].sender.includes(user)) {
           const div1 = document.createElement('div')
           div1.className = "card"
           div1.style.marginTop = "5px"
@@ -85,6 +110,7 @@ function load_mailbox(mailbox) {
           date.style.marginBottom = "0px"
           div2.append(date)
         }
+
       }
     });
 
@@ -92,7 +118,6 @@ function load_mailbox(mailbox) {
 };
 
 function read_email(id, mailbox) {
-  console.log('tu apertou no id: ', id)
   const user = document.getElementById('user').innerHTML
 
   fetch(`/emails/${id}`, {
@@ -107,6 +132,7 @@ function read_email(id, mailbox) {
   })
     .then(response => response.json())
     .then(data => {
+      console.log(mailbox)
       console.log(data)
       document.querySelector('#emails-view').innerHTML = ""
       const emailview = document.querySelector('#emails-view');
@@ -129,13 +155,20 @@ function read_email(id, mailbox) {
       answerBnt.style.marginRight = "5px"
       emailview.append(answerBnt)
       answerBnt.addEventListener("click", () => reply_email(data.id))
-      if (mailbox !== "sent") {
+      if (mailbox !== "sent" && mailbox !== "archive") {
         const archiveBnt = document.createElement('button')
         archiveBnt.innerHTML = "Archive"
         archiveBnt.className = "btn btn-primary"
         archiveBnt.style.marginRight = "5px"
         emailview.append(archiveBnt)
         archiveBnt.addEventListener('click', () => archive_email(data.id))
+      } else if (mailbox == "archive") {
+        const dearchiveBnt = document.createElement('button')
+        dearchiveBnt.innerHTML = "De-Archive"
+        dearchiveBnt.className = "btn btn-primary"
+        dearchiveBnt.style.marginRight = "5px"
+        emailview.append(dearchiveBnt)
+        dearchiveBnt.addEventListener('click', () => dearchive_email(data.id))
       }
       const unreadBnt = document.createElement('button')
       unreadBnt.innerHTML = "Mark as Unread"
@@ -150,6 +183,16 @@ function markAsUnread(id) {
     method: 'PUT',
     body: JSON.stringify({
       read: false
+    })
+  })
+    .then(() => load_mailbox('inbox'))
+}
+
+function dearchive_email(id) {
+  fetch(`/emails/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: false
     })
   })
     .then(() => load_mailbox('inbox'))
@@ -175,5 +218,18 @@ function sortById(a, b) {
 }
 
 function reply_email(id) {
-
+  document.querySelector('#emails-view').style.display = 'none';
+  document.querySelector('#compose-view').style.display = 'block';
+  console.log("chegou aqui")
+  fetch(`/emails/${id}`, {
+    method: 'GET'
+  })
+    .then(response => response.json())
+    .then(data => {
+      document.querySelector('#compose-recipients').value = data.sender;
+      document.querySelector('#compose-recipients').disabled = true;
+      document.querySelector('#compose-subject').value = `Re: ${data.subject}`;
+      document.querySelector('#compose-subject').disabled = true;
+      document.querySelector('#compose-body').value = `On ${data.timestamp}, ${data.recipients} wrote: ${data.body}`;
+    })
 }
