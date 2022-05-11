@@ -1,0 +1,33 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+
+{% block body %}
+{% if user.is_authenticated %}
+<form action="{% url 'index' %}" method="post">
+    {% csrf_token %}
+    <div class="card p-4">
+        <div class="form-group">
+            <h4>New Post</h4>
+            <textarea style="display: none" name="type">post</textarea>
+            <textarea class="form-control" name="content" rows="3"></textarea>
+        </div>
+        <input type="submit" class="btn btn-primary"></input>
+    </div>
+</form>
+{% endif %}
+{% for post in posts %}
+<div class="card p-4 my-3">
+    <h5 class="card-title">{{post.username}}</h5>
+    <p class="card-text">{{post.post_body}}</p>
+    <p>{{post.likes}} pessoas curtiram</p>
+    <p class="text-right">{{post.created}}</p>
+    <p class="text-right">{{post.id}}</p>
+    <button onclick="likepost({{post.id}})" class="btn btn-primary">Like</button>
+</div>
+{% endfor %}
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/script.js' %}"></script>
+{% endblock %}
